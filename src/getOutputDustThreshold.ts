@@ -27,6 +27,10 @@ export function getOutputDustThreshold(output: {
 
   const scriptPubKey = output.scriptPubKey
 
+  if (isScriptPubKeyUnspendable(scriptPubKey)) {
+    return 0
+  }
+
   const outputSize = estimateOutputVSizeAfterSign({ scriptPubKey })
 
   let inputSize: number
@@ -43,11 +47,32 @@ export function getOutputDustThreshold(output: {
 }
 
 /**
+ * https://github.com/bitcoin/bitcoin/blob/c1223188e0a5fb11c3a1b9224511a49dc2f848ed/src/script/script.h#L39
+ */
+const MAX_SCRIPT_SIZE = 10000
+
+/**
  * https://github.com/bitcoin/bitcoin/blob/2ffaa927023f5dc2a7b8d6cfeb4f4810e573b18c/src/script/script.h#L75
  */
 const OP_0 = 0x00
 const OP_1 = 0x51
 const OP_16 = 0x60
+const OP_RETURN = 0x6a
+
+/**
+ * https://github.com/bitcoin/bitcoin/blob/master/src/script/script.h#L552-L555
+ */
+function isScriptPubKeyUnspendable(scriptPubKey: Uint8Array): boolean {
+  if (scriptPubKey.length > 0 && scriptPubKey[0] === OP_RETURN) {
+    return true
+  }
+
+  if (scriptPubKey.length > MAX_SCRIPT_SIZE) {
+    return true
+  }
+
+  return false
+}
 
 /**
  * https://github.com/bitcoin/bitcoin/blob/master/src/script/script.cpp#L226-L240

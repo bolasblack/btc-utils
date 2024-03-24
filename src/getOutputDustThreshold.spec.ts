@@ -49,6 +49,14 @@ describe("getOutputDustThreshold", () => {
       }),
     ).toBe(330)
   })
+
+  it("should work with OP_RETURN output", () => {
+    expect(
+      getOutputDustThreshold({
+        scriptPubKey: decodeHex("6a13636861726c6579206c6f766573206865696469"),
+      }),
+    ).toBe(0)
+  })
 })
 
 const decodeHex = (hex: string): Uint8Array => {
