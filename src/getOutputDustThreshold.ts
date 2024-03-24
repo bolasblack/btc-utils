@@ -20,25 +20,26 @@ const DUST_RELAY_TX_FEE = 3000 / 1000 // sats/kvB
 export function getOutputDustThreshold(output: {
   scriptPubKey: Uint8Array
 }): number {
-  const scriptPubKey = output.scriptPubKey
-
   /**
    * https://bitcoin.stackexchange.com/a/41082
    * https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L26-L63
    */
 
-  let vSize = estimateOutputVSizeAfterSign({ scriptPubKey })
+  const scriptPubKey = output.scriptPubKey
 
+  const outputSize = estimateOutputVSizeAfterSign({ scriptPubKey })
+
+  let inputSize: number
   /**
    * https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L54-L60
    */
   if (isWitnessProgram(scriptPubKey)) {
-    vSize += 32 + 4 + 1 + 107 / WITNESS_SCALE_FACTOR + 4
+    inputSize = 32 + 4 + 1 + Math.floor(107 / WITNESS_SCALE_FACTOR) + 4
   } else {
-    vSize += 32 + 4 + 1 + 107 + 4
+    inputSize = 32 + 4 + 1 + 107 + 4
   }
 
-  return Math.ceil(vSize * DUST_RELAY_TX_FEE)
+  return (inputSize + outputSize) * DUST_RELAY_TX_FEE
 }
 
 /**
