@@ -1,0 +1,27 @@
+{
+  "name": "@c4/btc-utils",
+  "version": "0.0.1",
+  "description": "a utility library that provides helper functions for bitcoin transactions",
+  "keywords": [
+    "bitcoin"
+  ],
+  "author": "c4605 <bolasblack@gmail.com>",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "exports": "lib/index.mjs",
+  "scripts": {
+    "build": "rm -rf lib && tsup-node --sourcemap --dts -d lib --format cjs,esm src"
+  },
+  "devDependencies": {
+    "@c4605/toolconfs": "^5.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.2"
+  }
+}
