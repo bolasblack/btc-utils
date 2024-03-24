@@ -7,9 +7,14 @@
   ],
   "author": "c4605 <bolasblack@gmail.com>",
   "license": "ISC",
+  "files": [
+    "lib",
+    "src"
+  ],
   "main": "lib/index.js",
   "exports": "lib/index.mjs",
   "scripts": {
+    "prepare": "pnpm run build",
     "build": "rm -rf lib && tsup-node --sourcemap --dts -d lib --format cjs,esm src"
   },
   "devDependencies": {
