@@ -100,10 +100,7 @@ export type EstimationInput =
   | EstimationInput.P2TR
   | EstimationInput.P2TRScript
 export namespace EstimationInput {
-  interface Basic {
-    txId: string
-    index: number
-  }
+  interface Basic {}
 
   export interface P2PKH extends Basic {
     addressType: "p2pkh"
@@ -195,7 +192,7 @@ export const estimateInputVSizeAfterSign = (
       /**
        * scriptSig for p2sh usually like:
        *
-       * OP_PUSHBYTES_N0... <arg1> OP_PUSHBYTES_N1... <arg2> ... OP_PUSHBYTES_Nn <redeem-script>
+       * <arg1> <OP_PUSHBYTES_N1... <arg2>> ... OP_PUSHBYTES_Nn <redeem-script>
        */
       signatureScriptSlotSize = sum(
         ...(input.redeemScriptArgumentByteLengths.length === 0
@@ -379,7 +376,7 @@ export const estimatePublicKeyScriptVSize = (
    * * DER encoding: https://github.com/bitcoin/bips/blob/b3701faef2bdb98a0d7ace4eedbeefa2da4c89ed/bip-0066.mediawiki
    * * Sighash Type: https://btcinformation.org/en/developer-guide#signature-hash-types
    */
-  const sigLength = 72 // (8 ~ 71) + 1 (sighash type)
+  const sigLength = 73 // (8 ~ 72) + 1 (sighash type)
 
   const publicKeyLength = isPublicKeyCompressed ? 33 : 65
 
