@@ -48,29 +48,25 @@ export const estimateTransactionVSizeAfterSign = (txBeforeSign: {
     const witnessDataSize = sum(
       ...inputEstimationResults.map(s => s.witnessDataSize),
     )
-    return Math.ceil(
-      sum(
-        4, // nVersion
-        1 / WITNESS_SCALE_FACTOR, // marker
-        1 / WITNESS_SCALE_FACTOR, // flag
-        getCompactSizeByteSize(txBeforeSign.inputs.length), // vin count size
-        inputsSize, // vins
-        getCompactSizeByteSize(txBeforeSign.outputs.length), // vout count size
-        outputsSize, // vouts
-        witnessDataSize / WITNESS_SCALE_FACTOR, // witness data (with witness data discount)
-        4, // nLocktime
-      ),
+    return sum(
+      4, // nVersion
+      1 / WITNESS_SCALE_FACTOR, // marker
+      1 / WITNESS_SCALE_FACTOR, // flag
+      getCompactSizeByteSize(txBeforeSign.inputs.length), // vin count size
+      inputsSize, // vins
+      getCompactSizeByteSize(txBeforeSign.outputs.length), // vout count size
+      outputsSize, // vouts
+      witnessDataSize / WITNESS_SCALE_FACTOR, // witness data (with witness data discount)
+      4, // nLocktime
     )
   } else {
-    return Math.ceil(
-      sum(
-        4, // nVersion
-        getCompactSizeByteSize(txBeforeSign.inputs.length), // vin count size
-        inputsSize, // vins
-        getCompactSizeByteSize(txBeforeSign.outputs.length), // vout count size
-        outputsSize, // vouts
-        4, // nLocktime
-      ),
+    return sum(
+      4, // nVersion
+      getCompactSizeByteSize(txBeforeSign.inputs.length), // vin count size
+      inputsSize, // vins
+      getCompactSizeByteSize(txBeforeSign.outputs.length), // vout count size
+      outputsSize, // vouts
+      4, // nLocktime
     )
   }
 }
@@ -131,8 +127,9 @@ export namespace EstimationInput {
 
   export interface P2TRScript extends Basic {
     addressType: "p2tr-leafScript"
-    tapLeafScriptByteLength: number
     tapLeafScriptArgumentByteLengths: number[]
+    tapLeafScriptByteLength: number
+    controlBlockByteLength: number
   }
 
   export function isHasWitnessData(utxo: EstimationInput): boolean {
@@ -236,7 +233,8 @@ export const estimateInputVSizeAfterSign = (
       scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
       /**
-       * witness for p2wpkh is basically the scriptSig of p2pkh
+       * p2wpkh witness stack will only has one item,
+       * which is basically a p2pkh scriptSig
        */
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
@@ -258,9 +256,12 @@ export const estimateInputVSizeAfterSign = (
       scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
       /**
-       * witness for p2wsh usually like:
+       * p2wsh witness stack usually like:
        *
-       * <arg1-length> <arg1> <arg2-length> <arg2> ... <witness-script-length> <witness-script>
+       * <arg1-length> <arg1>
+       * <arg2-length> <arg2>
+       * ...
+       * <witness-script-length> <witness-script>
        */
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
@@ -314,12 +315,20 @@ export const estimateInputVSizeAfterSign = (
       /**
        * tap leaf script usually like:
        *
-       * <arg1-length> <arg1> <arg2-length> <arg2> ... <tapleaf-script-length> <tapleaf-script>
+       * <arg1-length> <arg1>
+       * <arg2-length> <arg2>
+       * ...
+       * <taproot-leaf-script-length> <taproot-leaf-script>
+       * <control-block-length> <control-block>
        */
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
+        // prettier-ignore
         getCompactSizeByteSize(
-          input.tapLeafScriptArgumentByteLengths.length + 1,
+          input.tapLeafScriptArgumentByteLengths.length
+          + 1 // the tap leaf script stack item
+          + 1 // the control block stack item
+          ,
         ),
 
         ...(input.tapLeafScriptArgumentByteLengths.length === 0
@@ -339,6 +348,12 @@ export const estimateInputVSizeAfterSign = (
         getCompactSizeByteSize(input.tapLeafScriptByteLength),
         // tap leaf script bytes
         input.tapLeafScriptByteLength,
+
+        // item n+1
+        // control block length byte
+        getCompactSizeByteSize(input.controlBlockByteLength),
+        // control block bytes
+        input.controlBlockByteLength,
       )
       break
     }
