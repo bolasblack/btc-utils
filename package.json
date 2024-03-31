@@ -12,7 +12,10 @@
     "src"
   ],
   "main": "lib/index.js",
-  "exports": "lib/index.mjs",
+  "exports": {
+    "./": "./lib/index.mjs",
+    "./btcSignerHelpers": "./lib/btcSignerHelpers.mjs"
+  },
   "scripts": {
     "prepare": "pnpm run build",
     "build": "rm -rf lib && tsup-node --sourcemap --dts -d lib --format cjs,esm src",

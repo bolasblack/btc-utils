@@ -3,8 +3,10 @@ import {
   TaprootControlBlock,
   OutScript,
 } from "@scure/btc-signer"
-import { EstimationInput } from "../lib"
-import { SCHNORR_SIGNATURE_SIZE } from "./estimateTransactionVSizeAfterSign"
+import {
+  EstimationInput,
+  SCHNORR_SIGNATURE_SIZE,
+} from "./estimateTransactionVSizeAfterSign"
 
 export const inputFromBtcSingerTapLeafScript = (
   tapLeafScript: NonNullable<TransactionInput["tapLeafScript"]>[number],

@@ -27,7 +27,7 @@ describe("inputFromBtcSingerTapLeafScript", () => {
       btc.p2tr_ns(4, [PubKey, PubKey2, PubKey3, PubKey4]),
     )
 
-    const { weEstimated, btcSignerEstimated } = getEstimatations(p2tr)
+    const { weEstimated, btcSignerEstimated } = getEstimations(p2tr)
 
     expect(weEstimated).toBe(btcSignerEstimated)
   })
@@ -38,7 +38,7 @@ describe("inputFromBtcSingerTapLeafScript", () => {
       btc.p2tr_ms(2, [PubKey, PubKey2, PubKey3, PubKey4]),
     )
 
-    const { weEstimated, btcSignerEstimated } = getEstimatations(p2tr)
+    const { weEstimated, btcSignerEstimated } = getEstimations(p2tr)
 
     expect(weEstimated).toBe(btcSignerEstimated)
   })
@@ -46,12 +46,12 @@ describe("inputFromBtcSingerTapLeafScript", () => {
   it("works with P2TR-PK", () => {
     const p2tr = btc.p2tr(undefined, btc.p2tr_pk(PubKey))
 
-    const { weEstimated, btcSignerEstimated } = getEstimatations(p2tr)
+    const { weEstimated, btcSignerEstimated } = getEstimations(p2tr)
 
     expect(weEstimated).toBe(btcSignerEstimated)
   })
 
-  function getEstimatations(p2tr: btc.P2TROut): {
+  function getEstimations(p2tr: btc.P2TROut): {
     weEstimated: number
     btcSignerEstimated: number
   } {
