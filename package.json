@@ -5,6 +5,7 @@
   "keywords": [
     "bitcoin"
   ],
+  "repository": "github:bolasblack/btc-utils",
   "author": "c4605 <bolasblack@gmail.com>",
   "license": "ISC",
   "files": [
