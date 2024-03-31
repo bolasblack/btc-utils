@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { estimateTransactionVSizeAfterSign } from "./estimateTransactionVSizeAfterSign"
+import {
+  estimatePublicKeyScriptVSize,
+  estimateTransactionVSizeAfterSign,
+} from "./estimateTransactionVSizeAfterSign"
 import {
   p2shTx,
+  p2sh_p2wpkh,
   p2tr,
   p2trLeafScript,
   p2wpkh,
@@ -69,6 +73,42 @@ describe("estimateTransactionVSizeAfterSign", () => {
      * the difference is because the signature length of the only input is
      * 71(OP_PUSHBYTES_72), but we only consider 72 (the maximum length), so
      * the estimated length is "109.50 + 1/4 = 109.75"
+     */
+  })
+
+  it("should work with P2SH-P2WPKH script", () => {
+    /**
+     * https://learnmeabitcoin.com/explorer/tx/d64f20461bd4a22b470bbaeb97b8cee4c7c75f39cac5bca1d172b7f526b7a6ec
+     */
+    expect(
+      estimateTransactionVSizeAfterSign({
+        inputs: p2sh_p2wpkh.vin.map(vin => ({
+          addressType: "p2sh",
+          redeemScriptArgumentByteLengths: [],
+          redeemScript:
+            /**
+             * the first byte is an OP_PUSH operator
+             */
+            decodeHex(vin.scriptSig.hex).slice(1),
+          witnessDataByteLengths: [
+            estimatePublicKeyScriptVSize(true).signatureLength,
+            estimatePublicKeyScriptVSize(true).publicKeyLength,
+          ],
+        })),
+        outputs: p2sh_p2wpkh.vout.map(vout => ({
+          scriptPubKey: decodeHex(vout.scriptPubKey.hex),
+        })),
+      }),
+    ).toBe(268)
+    /**
+     * actual size: 267.25
+     *
+     * the signature length for the first input is 71, for the second is 72, but
+     * what we estimated is both 73, so the difference is:
+     *
+     *     ((73 - 71) + (73 - 72)) * 0.4 (The witness discount) =
+     *     268 - 267.25 =
+     *     0.75
      */
   })
 

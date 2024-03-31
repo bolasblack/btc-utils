@@ -179,6 +179,74 @@ export const p2wpkh = {
   blocktime: 1620233565,
 } as const
 
+export const p2sh_p2wpkh = {
+  txid: "d64f20461bd4a22b470bbaeb97b8cee4c7c75f39cac5bca1d172b7f526b7a6ec",
+  hash: "7831bdf3ab6aa219edc8c8833947e3c813d3d799220ba275bdb0300b6ebcc3fe",
+  version: 2,
+  size: 430,
+  vsize: 268,
+  weight: 1069,
+  locktime: 0,
+  vin: [
+    {
+      txid: "0aa1fe320151c178b395f546b6f8f9c4fd5b26cabd91fd590fb95ff179bb2d01",
+      vout: 0,
+      scriptSig: {
+        asm: "00141d1f6da5fe5e1b07547f1d970f60cbf34e4c7d33",
+        hex: "1600141d1f6da5fe5e1b07547f1d970f60cbf34e4c7d33",
+      },
+      txinwitness: [
+        "304402207beb5e29a1c25747a11dd1262709fdfa9e22924f4b43cabcac3b269fec4eb9ac0220503a5a8c17f626d19713d24f786cc052a6cade953688701612e0b0960df187b101",
+        "03c56a572704a1445cf769334efb6d555df7c895f3815500b4c7989d51fff2d2d8",
+      ],
+      sequence: 4294967293,
+    },
+    {
+      txid: "5526ccc35ae1440684a9544ac1c56b83bdd7474a10d78a79899f928a91a3ed57",
+      vout: 6,
+      scriptSig: {
+        asm: "00141d1f6da5fe5e1b07547f1d970f60cbf34e4c7d33",
+        hex: "1600141d1f6da5fe5e1b07547f1d970f60cbf34e4c7d33",
+      },
+      txinwitness: [
+        "3045022100f1f76ca7a2ec813df230e07ffe1a1196d6c6b95befb1e4452fb165d0bab3f05f02204d4580a35c2a988b1afb5d34e93bc3a45b977f2548104dbf2a9acac3f170443001",
+        "03c56a572704a1445cf769334efb6d555df7c895f3815500b4c7989d51fff2d2d8",
+      ],
+      sequence: 4294967293,
+    },
+  ],
+  vout: [
+    {
+      value: 0.0001,
+      n: 0,
+      scriptPubKey: {
+        asm: "1 c0f92f783341a575e1be227314c493541065d230b1e0db979c41cc9dcf5a28df",
+        desc: "rawtr(c0f92f783341a575e1be227314c493541065d230b1e0db979c41cc9dcf5a28df)#5873jqpl",
+        hex: "5120c0f92f783341a575e1be227314c493541065d230b1e0db979c41cc9dcf5a28df",
+        address:
+          "bc1pcruj77pngxjhtcd7yfe3f3yn2sgxt53sk8sdh9uug8xfmn669r0spmnx2g",
+        type: "witness_v1_taproot",
+      },
+    },
+    {
+      value: 0.00191859,
+      n: 1,
+      scriptPubKey: {
+        asm: "OP_HASH160 2c2949f4667812f00b318cffbb46c37d92c23c86 OP_EQUAL",
+        desc: "addr(35iX7nZY4j4d3oLL6sDW46pVx53TwZhDQx)#0n7pmun9",
+        hex: "a9142c2949f4667812f00b318cffbb46c37d92c23c8687",
+        address: "35iX7nZY4j4d3oLL6sDW46pVx53TwZhDQx",
+        type: "scripthash",
+      },
+    },
+  ],
+  hex: "02000000000102012dbb79f15fb90f59fd91bdca265bfdc4f9f8b646f595b378c1510132fea10a00000000171600141d1f6da5fe5e1b07547f1d970f60cbf34e4c7d33fdffffff57eda3918a929f89798ad7104a47d7bd836bc5c14a54a9840644e15ac3cc265506000000171600141d1f6da5fe5e1b07547f1d970f60cbf34e4c7d33fdffffff021027000000000000225120c0f92f783341a575e1be227314c493541065d230b1e0db979c41cc9dcf5a28df73ed02000000000017a9142c2949f4667812f00b318cffbb46c37d92c23c86870247304402207beb5e29a1c25747a11dd1262709fdfa9e22924f4b43cabcac3b269fec4eb9ac0220503a5a8c17f626d19713d24f786cc052a6cade953688701612e0b0960df187b1012103c56a572704a1445cf769334efb6d555df7c895f3815500b4c7989d51fff2d2d802483045022100f1f76ca7a2ec813df230e07ffe1a1196d6c6b95befb1e4452fb165d0bab3f05f02204d4580a35c2a988b1afb5d34e93bc3a45b977f2548104dbf2a9acac3f1704430012103c56a572704a1445cf769334efb6d555df7c895f3815500b4c7989d51fff2d2d800000000",
+  blockhash: "0000000000000000000174bf029fd8dd9925e36b175ed2cf1a13a1cc78709d6b",
+  confirmations: 4465,
+  time: 1709263002,
+  blocktime: 1709263002,
+} as const
+
 export const p2wsh = {
   txid: "b38a88b073743bcc84170071cff4b68dec6fb5dc0bc8ffcb3d4ca632c2c78255",
   hash: "b8c2c3c5dabf28ee7b21a1e0098a7b1740b29f5e8856becada2b20d55807b7fb",

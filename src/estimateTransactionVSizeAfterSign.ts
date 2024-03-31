@@ -175,13 +175,18 @@ export const estimateInputVSizeAfterSign = (
 
   switch (input.addressType) {
     case "p2pkh": {
+      const sizes = estimatePublicKeyScriptVSize(input.isPublicKeyCompressed)
+
       /**
        * scriptSig for p2pkh usually like:
        *
        * OP_PUSHBYTES_N0 <sig> OP_PUSHBYTES_N1 <pubkey>
        */
-      signatureScriptSlotSize = estimatePublicKeyScriptVSize(
-        input.isPublicKeyCompressed,
+      signatureScriptSlotSize = sum(
+        getOpPushSize(sizes.signatureLength),
+        sizes.signatureLength,
+        getOpPushSize(sizes.publicKeyLength),
+        sizes.publicKeyLength,
       )
 
       scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
@@ -214,7 +219,7 @@ export const estimateInputVSizeAfterSign = (
       if (input.witnessDataByteLengths != null) {
         witnessDataSlotSize = sum(
           // byte to indicate the witness stack item count
-          getCompactSizeByteSize(1),
+          getCompactSizeByteSize(input.witnessDataByteLengths.length),
 
           // item length bytes
           ...input.witnessDataByteLengths.map(getCompactSizeByteSize),
@@ -234,15 +239,16 @@ export const estimateInputVSizeAfterSign = (
       signatureScriptSlotSize = 0
       scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
-      /**
-       * p2wpkh witness stack will only has one item,
-       * which is basically a p2pkh scriptSig
-       */
+      const witnessSigSizes = estimatePublicKeyScriptVSize(true)
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
-        getCompactSizeByteSize(1),
+        getCompactSizeByteSize(2),
         // item 1
-        estimatePublicKeyScriptVSize(true),
+        getCompactSizeByteSize(witnessSigSizes.signatureLength),
+        witnessSigSizes.signatureLength,
+        // item 2
+        getCompactSizeByteSize(witnessSigSizes.publicKeyLength),
+        witnessSigSizes.publicKeyLength,
       )
       break
     }
@@ -385,7 +391,10 @@ export const estimateInputVSizeAfterSign = (
  */
 export const estimatePublicKeyScriptVSize = (
   isPublicKeyCompressed: boolean,
-): number => {
+): {
+  signatureLength: number
+  publicKeyLength: number
+} => {
   /**
    * DER encoded secp256k1 signature
    *
@@ -396,10 +405,8 @@ export const estimatePublicKeyScriptVSize = (
 
   const publicKeyLength = isPublicKeyCompressed ? 33 : 65
 
-  return sum(
-    getOpPushSize(sigLength),
-    sigLength,
-    getOpPushSize(publicKeyLength),
-    publicKeyLength,
-  )
+  return {
+    signatureLength: sigLength,
+    publicKeyLength: publicKeyLength,
+  }
 }
