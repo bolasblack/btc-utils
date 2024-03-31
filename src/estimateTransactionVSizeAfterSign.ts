@@ -17,6 +17,8 @@ export class UnsupportedInputTypeError extends Error {
  */
 export const WITNESS_SCALE_FACTOR = 4
 
+export const SCHNORR_SIGNATURE_SIZE = 65 // or 64, determined by the sighash type
+
 export const estimateTransactionVSizeAfterSign = (txBeforeSign: {
   inputs: EstimationInput[]
   outputs: EstimationOutput[]
@@ -295,13 +297,12 @@ export const estimateInputVSizeAfterSign = (
       signatureScriptSlotSize = 0
       scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
-      const schnorrSignatureSize = 65 // or 64, determined by the sighash type
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
         getCompactSizeByteSize(1),
         // item 1
-        getCompactSizeByteSize(schnorrSignatureSize),
-        schnorrSignatureSize,
+        getCompactSizeByteSize(SCHNORR_SIGNATURE_SIZE),
+        SCHNORR_SIGNATURE_SIZE,
       )
       break
     }

@@ -7,7 +7,7 @@ import {
   p2wpkh,
   p2wsh,
 } from "./estimateTransactionVSizeAfterSign.fixture"
-import { decodeHex } from "./getOutputDustThreshold.spec"
+import { decodeHex } from "./utils/decodeHex"
 
 describe("estimateTransactionVSizeAfterSign", () => {
   it("should work with P2PKH and P2SH script", () => {
