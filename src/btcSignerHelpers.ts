@@ -1,4 +1,6 @@
-import { _Estimator, TransactionInputUpdate, TxOpts } from "@scure/btc-signer"
+import { _Estimator } from "@scure/btc-signer"
+import { TransactionInputUpdate } from "@scure/btc-signer/lib/psbt"
+import { TxOpts } from "@scure/btc-signer/lib/transaction"
 import { WITNESS_SCALE_FACTOR } from "./estimateTransactionVSizeAfterSign"
 
 export const estimateInputVSizeAfterSign = (
