@@ -21,6 +21,6 @@
 
 - `@c4/btc-utils/btcSignerHelpers`:
 
-    - `inputFromBtcSingerTapLeafScript`: helps to generate `EstimationInput.P2TRScript` from a `@scure/btc-signer`'s `tapLeafScript`
+    - `estimateInputVSizeAfterSign`: use `@scure/btc-signer` to estimate input size
 
       Check out the [unit tests](src/btcSignerHelpers.spec.ts) for more details
