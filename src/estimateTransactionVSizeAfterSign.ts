@@ -1,6 +1,7 @@
 import { sum } from "./utils/sum"
 import { getCompactSizeByteSize } from "./utils/getCompactSizeByteSize"
 import { getOpPushSize } from "./utils/getOpPushSize"
+import { checkNever } from "./utils/checkNever"
 
 export class UnsupportedInputTypeError extends Error {
   cause!: EstimationInput
@@ -146,6 +147,7 @@ export namespace EstimationInput {
       case "p2tr-leafScript":
         return true
       default:
+        checkNever(utxo)
         throw new UnsupportedInputTypeError(utxo)
     }
   }
@@ -365,6 +367,7 @@ export const estimateInputVSizeAfterSign = (
       break
     }
     default:
+      checkNever(input)
       throw new UnsupportedInputTypeError(input)
   }
 
