@@ -14,8 +14,16 @@
   ],
   "main": "lib/index.js",
   "exports": {
-    "./": "./lib/index.mjs",
-    "./btcSignerHelpers": "./lib/btcSignerHelpers.mjs"
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.mjs",
+      "default": "./lib/index.js"
+    },
+    "./btcSignerHelpers": {
+      "types": "./lib/btcSignerHelpers.d.ts",
+      "import": "./lib/btcSignerHelpers.mjs",
+      "default": "./lib/btcSignerHelpers.js"
+    }
   },
   "scripts": {
     "prepare": "pnpm run build",
