@@ -19,6 +19,11 @@
       "import": "./lib/index.mjs",
       "default": "./lib/index.js"
     },
+    "./estimationInputShortcuts": {
+      "types": "./lib/estimationInputShortcuts.d.ts",
+      "import": "./lib/estimationInputShortcuts.mjs",
+      "default": "./lib/estimationInputShortcuts.js"
+    },
     "./btcSignerHelpers": {
       "types": "./lib/btcSignerHelpers.d.ts",
       "import": "./lib/btcSignerHelpers.mjs",

@@ -1,4 +1,4 @@
-export const p2shTx = {
+export const p2sh_tx = {
   txid: "30c239f3ae062c5f1151476005fd0057adfa6922de1b38d0f11eb657a8157b30",
   hash: "30c239f3ae062c5f1151476005fd0057adfa6922de1b38d0f11eb657a8157b30",
   version: 1,
@@ -136,7 +136,7 @@ export const p2shTx = {
   blocktime: 1339247930,
 } as const
 
-export const p2wpkh = {
+export const p2wpkh_tx = {
   txid: "1674761a2b5cb6c7ea39ef58483433e8735e732f5d5815c9ef90523a91ed34a6",
   hash: "239ffa52c1bd0cca710c71de802bc63b54b6b7e0709972c1a9cbf7bee7f3ad18",
   version: 2,
@@ -179,7 +179,7 @@ export const p2wpkh = {
   blocktime: 1620233565,
 } as const
 
-export const p2sh_p2wpkh = {
+export const p2sh_p2wpkh_tx = {
   txid: "d64f20461bd4a22b470bbaeb97b8cee4c7c75f39cac5bca1d172b7f526b7a6ec",
   hash: "7831bdf3ab6aa219edc8c8833947e3c813d3d799220ba275bdb0300b6ebcc3fe",
   version: 2,
@@ -247,7 +247,7 @@ export const p2sh_p2wpkh = {
   blocktime: 1709263002,
 } as const
 
-export const p2wsh = {
+export const p2wsh_tx = {
   txid: "b38a88b073743bcc84170071cff4b68dec6fb5dc0bc8ffcb3d4ca632c2c78255",
   hash: "b8c2c3c5dabf28ee7b21a1e0098a7b1740b29f5e8856becada2b20d55807b7fb",
   version: 1,
@@ -304,7 +304,24 @@ export const p2wsh = {
   blocktime: 1589225023,
 } as const
 
-export const p2tr = {
+/**
+ * @see https://github.com/bitcoin/bips/blob/acb195f82ec464f014e3d6cf8af65a403724c56b/bip-0143.mediawiki#p2sh-p2wsh
+ */
+export const p2sh_p2wsh_multisig_tx = {
+  vin: [
+    {
+      txid: "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e",
+      vout: "01000000",
+      scriptsigsize: "23",
+      scriptsig:
+        "220020a16b5755f7f6f96dbd65f5f0d6ab9418b89af4b1f14a1bb8a09062c35f0dcb54",
+      sequence: "ffffffff",
+    },
+  ],
+  vout: [],
+} as const
+
+export const p2tr_tx = {
   txid: "68ae452687b9d0ff11c628d2c72d09b3857784b13f7438c4ef56d73d7c2ab83c",
   hash: "db615628a04f594c46d175f6115923f617a26d3f34ec4e037a60cc8cc4939617",
   version: 2,
@@ -394,7 +411,7 @@ export const p2tr = {
   blocktime: 1703202249,
 } as const
 
-export const p2trLeafScript = {
+export const p2trLeafScript_tx = {
   txid: "f0720c7a804acc63c0db27fe7770a74e33877f11ad42104b4d3e94785428575f",
   hash: "79e696d2180693ac1b114bd11b0f06cce7a82e35c5cdceaa4304bfe89f6c3a29",
   version: 2,

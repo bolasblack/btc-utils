@@ -245,10 +245,10 @@ export const estimateInputVSizeAfterSign = (
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
         getCompactSizeByteSize(2),
-        // item 1
+        // signature
         getCompactSizeByteSize(witnessSigSizes.signatureLength),
         witnessSigSizes.signatureLength,
-        // item 2
+        // pubkey
         getCompactSizeByteSize(witnessSigSizes.publicKeyLength),
         witnessSigSizes.publicKeyLength,
       )

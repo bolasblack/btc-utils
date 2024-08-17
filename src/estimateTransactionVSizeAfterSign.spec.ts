@@ -4,14 +4,15 @@ import {
   estimateTransactionVSizeAfterSign,
 } from "./estimateTransactionVSizeAfterSign"
 import {
-  p2shTx,
-  p2sh_p2wpkh,
-  p2tr,
-  p2trLeafScript,
-  p2wpkh,
-  p2wsh,
+  p2sh_tx,
+  p2sh_p2wpkh_tx,
+  p2tr_tx,
+  p2trLeafScript_tx,
+  p2wpkh_tx,
+  p2wsh_tx,
 } from "./estimateTransactionVSizeAfterSign.fixture"
 import { decodeHex } from "./utils/decodeHex"
+import { sum } from "./utils/sum"
 
 describe("estimateTransactionVSizeAfterSign", () => {
   it("should work with P2PKH and P2SH script", () => {
@@ -20,7 +21,7 @@ describe("estimateTransactionVSizeAfterSign", () => {
      */
     expect(
       estimateTransactionVSizeAfterSign({
-        inputs: p2shTx.vin.map((vin, idx) =>
+        inputs: p2sh_tx.vin.map((vin, idx) =>
           idx === 11
             ? {
                 addressType: "p2sh",
@@ -43,13 +44,20 @@ describe("estimateTransactionVSizeAfterSign", () => {
           },
         ],
       }),
-    ).toBe(1963)
+    ).toBe(
+      1952 +
+        sum(
+          ...p2sh_tx.vin
+            .slice(0, 11)
+            .map(vin => 72 - vin.scriptSig.asm.split("[ALL] ")[0].length / 2),
+        ),
+    )
     /**
      * actual size: 1952.00
      *
      * The difference is because some actual signature length of certain inputs
-     * are 70(OP_PUSHBYTES_71)/71(OP_PUSHBYTES_72), but we only consider 72 (the
-     * maximum length)
+     * are 70(OP_PUSHBYTES_71)/71(OP_PUSHBYTES_72), but we only consider 73 (the
+     * maximum length + sighash)
      */
   })
 
@@ -59,20 +67,20 @@ describe("estimateTransactionVSizeAfterSign", () => {
      */
     expect(
       estimateTransactionVSizeAfterSign({
-        inputs: p2wpkh.vin.map(() => ({
+        inputs: p2wpkh_tx.vin.map(() => ({
           addressType: "p2wpkh",
         })),
-        outputs: p2wpkh.vout.map(vout => ({
+        outputs: p2wpkh_tx.vout.map(vout => ({
           scriptPubKey: decodeHex(vout.scriptPubKey.hex),
         })),
       }),
-    ).toBe(109.75)
+    ).toBe(109.5 + (73 - p2wpkh_tx.vin[0].txinwitness[0].length / 2) / 4)
     /**
      * actual size: 109.50
      *
      * the difference is because the signature length of the only input is
-     * 71(OP_PUSHBYTES_72), but we only consider 72 (the maximum length), so
-     * the estimated length is "109.50 + 1/4 = 109.75"
+     * 71(OP_PUSHBYTES_72), but we only consider 73 (the maximum length +
+     * sighash), so the estimated length is "109.50 + 1/4 = 109.75"
      */
   })
 
@@ -82,7 +90,7 @@ describe("estimateTransactionVSizeAfterSign", () => {
      */
     expect(
       estimateTransactionVSizeAfterSign({
-        inputs: p2sh_p2wpkh.vin.map(vin => ({
+        inputs: p2sh_p2wpkh_tx.vin.map(vin => ({
           addressType: "p2sh",
           redeemScriptArgumentByteLengths: [],
           redeemScript:
@@ -95,7 +103,7 @@ describe("estimateTransactionVSizeAfterSign", () => {
             estimatePublicKeyScriptVSize(true).publicKeyLength,
           ],
         })),
-        outputs: p2sh_p2wpkh.vout.map(vout => ({
+        outputs: p2sh_p2wpkh_tx.vout.map(vout => ({
           scriptPubKey: decodeHex(vout.scriptPubKey.hex),
         })),
       }),
@@ -118,7 +126,7 @@ describe("estimateTransactionVSizeAfterSign", () => {
      */
     expect(
       estimateTransactionVSizeAfterSign({
-        inputs: p2wsh.vin.map(vin => ({
+        inputs: p2wsh_tx.vin.map(vin => ({
           addressType: "p2wsh",
           witnessScript: decodeHex(vin.txinwitness[3]),
           witnessScriptArgumentByteLength: [
@@ -127,7 +135,7 @@ describe("estimateTransactionVSizeAfterSign", () => {
             vin.txinwitness[2].length / 2,
           ],
         })),
-        outputs: p2wsh.vout.map(vout => ({
+        outputs: p2wsh_tx.vout.map(vout => ({
           scriptPubKey: decodeHex(vout.scriptPubKey.hex),
         })),
       }),
@@ -144,10 +152,10 @@ describe("estimateTransactionVSizeAfterSign", () => {
           { addressType: "p2wpkh" },
           {
             addressType: "p2tr",
-            tapInternalKey: decodeHex(p2tr.vin[1].txinwitness[0]),
+            tapInternalKey: decodeHex(p2tr_tx.vin[1].txinwitness[0]),
           },
         ],
-        outputs: p2tr.vout.map(vout => ({
+        outputs: p2tr_tx.vout.map(vout => ({
           scriptPubKey: decodeHex(vout.scriptPubKey.hex),
         })),
       }),
@@ -171,15 +179,15 @@ describe("estimateTransactionVSizeAfterSign", () => {
           {
             addressType: "p2tr-leafScript",
             tapLeafScriptArgumentByteLengths: [
-              p2trLeafScript.vin[0].txinwitness[0].length / 2,
+              p2trLeafScript_tx.vin[0].txinwitness[0].length / 2,
             ],
             tapLeafScriptByteLength:
-              p2trLeafScript.vin[0].txinwitness[1].length / 2,
+              p2trLeafScript_tx.vin[0].txinwitness[1].length / 2,
             controlBlockByteLength:
-              p2trLeafScript.vin[0].txinwitness[2].length / 2,
+              p2trLeafScript_tx.vin[0].txinwitness[2].length / 2,
           },
         ],
-        outputs: p2trLeafScript.vout.map(vout => ({
+        outputs: p2trLeafScript_tx.vout.map(vout => ({
           scriptPubKey: decodeHex(vout.scriptPubKey.hex),
         })),
       }),
