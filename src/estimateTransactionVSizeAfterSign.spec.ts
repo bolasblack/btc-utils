@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  estimateOutputVSizeAfterSign,
   estimatePublicKeyScriptVSize,
   estimateTransactionVSizeAfterSign,
 } from "./estimateTransactionVSizeAfterSign"
@@ -13,8 +14,44 @@ import {
 } from "./estimateTransactionVSizeAfterSign.fixture"
 import { decodeHex } from "./utils/decodeHex"
 import { sum } from "./utils/sum"
+import { getCompactSizeByteSize } from "./utils/getCompactSizeByteSize"
 
 describe("estimateTransactionVSizeAfterSign", () => {
+  it("should work with custom input", () => {
+    const outputScriptPubKey = decodeHex(
+      "a914748284390f9e263a4b766a75d0633c50426eb87587",
+    )
+    const inputSize = 148
+    const witnessDataSize = 107
+    expect(
+      estimateTransactionVSizeAfterSign({
+        inputs: [
+          {
+            addressType: "custom",
+            inputSize,
+            witnessDataSize,
+          },
+        ],
+        outputs: [
+          {
+            scriptPubKey: outputScriptPubKey,
+          },
+        ],
+      }),
+    ).toBe(
+      // prettier-ignore
+      4 +
+      1 / 4 +
+      1 / 4 +
+      getCompactSizeByteSize(1) +
+      inputSize +
+      getCompactSizeByteSize(1) +
+      estimateOutputVSizeAfterSign({ scriptPubKey: outputScriptPubKey }) +
+      witnessDataSize / 4 +
+      4,
+    )
+  })
+
   it("should work with P2PKH and P2SH script", () => {
     /**
      * https://learnmeabitcoin.com/explorer/tx/30c239f3ae062c5f1151476005fd0057adfa6922de1b38d0f11eb657a8157b30
@@ -74,7 +111,10 @@ describe("estimateTransactionVSizeAfterSign", () => {
           scriptPubKey: decodeHex(vout.scriptPubKey.hex),
         })),
       }),
-    ).toBe(109.5 + (73 - p2wpkh_tx.vin[0].txinwitness[0].length / 2) / 4)
+    ).toBe(
+      109.5 + (73 - p2wpkh_tx.vin[0].txinwitness[0].length / 2) / 4,
+      /* = 109.75 */
+    )
     /**
      * actual size: 109.50
      *

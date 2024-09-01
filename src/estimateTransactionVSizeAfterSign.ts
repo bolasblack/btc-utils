@@ -92,6 +92,7 @@ export const estimateOutputVSizeAfterSign = (
 }
 
 export type EstimationInput =
+  | EstimationInput.Custom
   | EstimationInput.P2PKH
   | EstimationInput.P2SH
   | EstimationInput.P2WPKH
@@ -100,6 +101,15 @@ export type EstimationInput =
   | EstimationInput.P2TRScript
 export namespace EstimationInput {
   interface Basic {}
+
+  export interface Custom extends Basic {
+    addressType: "custom"
+    inputSize: number
+    /**
+     * `undefined` means no witness data exist
+     */
+    witnessDataSize?: number
+  }
 
   export interface P2PKH extends Basic {
     addressType: "p2pkh"
@@ -137,6 +147,8 @@ export namespace EstimationInput {
 
   export function isHasWitnessData(utxo: EstimationInput): boolean {
     switch (utxo.addressType) {
+      case "custom":
+        return utxo.witnessDataSize != null
       case "p2pkh":
         return false
       case "p2sh":
@@ -176,6 +188,12 @@ export const estimateInputVSizeAfterSign = (
   const sequenceSlotSize = 4
 
   switch (input.addressType) {
+    case "custom": {
+      return {
+        inputSize: input.inputSize,
+        witnessDataSize: input.witnessDataSize ?? 0,
+      }
+    }
     case "p2pkh": {
       const sizes = estimatePublicKeyScriptVSize(input.isPublicKeyCompressed)
 

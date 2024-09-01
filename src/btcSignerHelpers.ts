@@ -1,7 +1,10 @@
 import { _Estimator } from "@scure/btc-signer"
 import { TransactionInputUpdate } from "@scure/btc-signer/lib/psbt"
 import { TxOpts } from "@scure/btc-signer/lib/transaction"
-import { WITNESS_SCALE_FACTOR } from "./estimateTransactionVSizeAfterSign"
+import {
+  EstimationInput,
+  WITNESS_SCALE_FACTOR,
+} from "./estimateTransactionVSizeAfterSign"
 
 export const estimateInputVSizeAfterSign = (
   input: TransactionInputUpdate,
@@ -23,5 +26,18 @@ export const estimateInputVSizeAfterSign = (
     weight,
     vsize: weight / WITNESS_SCALE_FACTOR,
     hasWitnessData: hasWitnesses,
+  }
+}
+
+export const estimateInputVSizeAfterSign_2 = (
+  input: TransactionInputUpdate,
+  txOptions: TxOpts,
+): EstimationInput.Custom => {
+  const res = estimateInputVSizeAfterSign(input, txOptions)
+
+  return {
+    addressType: "custom",
+    inputSize: res.vsize,
+    witnessDataSize: res.hasWitnessData ? 0 : undefined,
   }
 }

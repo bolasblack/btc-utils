@@ -148,6 +148,9 @@ export const p2wpkh_tx = {
     {
       txid: "c178d8dacdfb989f9d4fa45828ed188cd54a0414d625c3e61e75c5e3ac15a83a",
       vout: 0,
+      scriptPubKey: {
+        hex: "0014841b80d2cc75f5345c482af96294d04fdd66b2b7",
+      },
       scriptSig: {
         asm: "",
         hex: "",
@@ -333,6 +336,9 @@ export const p2tr_tx = {
     {
       txid: "1f25e59e34b9c9252ef2dc3ae93f937b619d495a8084f8bf7bdefca1f0c2eab0",
       vout: 1,
+      scriptPubKey: {
+        hex: "0014ba36958a60d16cebc7ed2e96b646b5f6be127b68",
+      },
       scriptSig: {
         asm: "",
         hex: "",
@@ -346,6 +352,9 @@ export const p2tr_tx = {
     {
       txid: "805b495e7e393647bd45b6e74f86eea67b96aa4208604005dc348f45fbb5bb0f",
       vout: 2,
+      scriptPubKey: {
+        hex: "512064cffe03176f99d7670d26c2356a26253f754f2e8555595c2a08951f5b531b3c",
+      },
       scriptSig: {
         asm: "",
         hex: "",
