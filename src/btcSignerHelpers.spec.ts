@@ -21,11 +21,7 @@ describe("estimateInputVSizeAfterSign_2", () => {
           script: decodeHex(p2wpkh_tx.vin[0].scriptPubKey.hex),
         },
       },
-      {
-        allowLegacyWitnessUtxo: true,
-        allowUnknownInputs: true,
-        allowUnknownOutputs: true,
-      },
+      {},
     )
 
     const expected = estimateInputVSizeAfterSign({
@@ -39,12 +35,23 @@ describe("estimateInputVSizeAfterSign_2", () => {
     )
   })
 
-  it("works with estimateTransactionVSizeAfterSign", () => {
-    const tx = Transaction.fromRaw(decodeHex(p2wpkh_tx.hex), {
-      allowLegacyWitnessUtxo: true,
-      allowUnknownInputs: true,
-      allowUnknownOutputs: true,
+  it("support finalScriptSig", () => {
+    const tx = Transaction.fromRaw(decodeHex(p2wpkh_tx.hex))
+    const estimated = estimateInputVSizeAfterSign_2(tx.getInput(0)!, {})
+
+    const expected = estimateInputVSizeAfterSign({
+      addressType: "p2wpkh",
     })
+
+    expect(estimated.inputSize + (estimated.witnessDataSize ?? 0)).toBe(
+      expected.inputSize +
+        expected.witnessDataSize / WITNESS_SCALE_FACTOR -
+        0.25 /* signature length difference */,
+    )
+  })
+
+  it("works with estimateTransactionVSizeAfterSign", () => {
+    const tx = Transaction.fromRaw(decodeHex(p2wpkh_tx.hex))
     const inputs = range(0, tx.inputsLength).map(i =>
       estimateInputVSizeAfterSign_2(
         {
@@ -55,11 +62,7 @@ describe("estimateInputVSizeAfterSign_2", () => {
             script: decodeHex(p2wpkh_tx.vin[i].scriptPubKey.hex),
           },
         },
-        {
-          allowLegacyWitnessUtxo: true,
-          allowUnknownInputs: true,
-          allowUnknownOutputs: true,
-        },
+        {},
       ),
     )
 
