@@ -1,6 +1,6 @@
 {
   "name": "@c4/btc-utils",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "a utility library that provides helper functions for bitcoin transactions",
   "keywords": [
     "bitcoin"
