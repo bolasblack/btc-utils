@@ -1,11 +1,13 @@
 import { _Estimator } from "@scure/btc-signer"
 import { TransactionInputUpdate } from "@scure/btc-signer/psbt"
-import { RawWitness, VarBytes } from "@scure/btc-signer/script"
 import { TxOpts } from "@scure/btc-signer/transaction"
 import {
   EstimationInput,
+  sumInputVSize,
   WITNESS_SCALE_FACTOR,
 } from "./estimateTransactionVSizeAfterSign"
+import { getCompactSizeByteSize } from "./utils/getCompactSizeByteSize"
+import { sum } from "./utils/sum"
 
 export const estimateInputVSizeAfterSign = (
   input: TransactionInputUpdate,
@@ -14,6 +16,8 @@ export const estimateInputVSizeAfterSign = (
   weight: number
   vsize: number
   hasWitnessData: boolean
+  inputSize?: number
+  witnessDataSize?: number
   inputWeight?: number
   witnessDataWeight?: number
 } => {
@@ -23,20 +27,30 @@ export const estimateInputVSizeAfterSign = (
    * from https://github.com/paulmillr/scure-btc-signer/blob/2b19086a0ce51c7476c9f495f50a25e4289f40f4/src/transaction.ts#L610-L613
    */
   if ("finalScriptSig" in input && input.finalScriptSig) {
-    const inputWeight = 160 + 4 * VarBytes.encode(input.finalScriptSig).length
+    const inputSize = sumInputVSize(input.finalScriptSig.length)
 
     let hasWitnessData = false
-    let witnessDataWeight: number | undefined
+    let witnessDataSize: number | undefined
     if ("finalScriptWitness" in input && input.finalScriptWitness) {
       hasWitnessData = true
-      witnessDataWeight = RawWitness.encode(input.finalScriptWitness).length
+      witnessDataSize = sum(
+        // byte to indicate the witness stack item count
+        getCompactSizeByteSize(input.finalScriptWitness.length),
+
+        // witness stack items
+        ...input.finalScriptWitness.map(a => a.length),
+      )
     }
 
-    const weight = inputWeight + (witnessDataWeight ?? 0)
+    const inputWeight = inputSize * WITNESS_SCALE_FACTOR
+    const witnessDataWeight = witnessDataSize ?? 0
+    const weight = inputWeight + witnessDataWeight
     return {
       weight,
       vsize: weight / WITNESS_SCALE_FACTOR,
       hasWitnessData,
+      inputSize,
+      witnessDataSize,
       inputWeight,
       witnessDataWeight,
     }
@@ -63,14 +77,11 @@ export const estimateInputVSizeAfterSign_2 = (
 ): EstimationInput.Custom => {
   const res = estimateInputVSizeAfterSign(input, txOptions)
 
-  if (res.inputWeight != null) {
+  if (res.inputSize != null) {
     return {
       addressType: "custom",
-      inputSize: res.inputWeight / WITNESS_SCALE_FACTOR,
-      witnessDataSize:
-        res.witnessDataWeight == null
-          ? undefined
-          : res.witnessDataWeight / WITNESS_SCALE_FACTOR,
+      inputSize: res.inputSize,
+      witnessDataSize: res.witnessDataSize,
     }
   }
 

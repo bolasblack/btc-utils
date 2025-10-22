@@ -180,12 +180,8 @@ export const estimateInputVSizeAfterSign = (
    *     * (backup) https://github.com/bitcoin-dot-org/developer.bitcoin.org/blob/813ba3fb5eae85cfdfffe91d12f2df653ea8b725/reference/transactions.rst#txin-a-transaction-input-non-coinbase
    */
 
-  const previousOutputTxidSlotSize = 32
-  const previousOutputIndexSlotSize = 4
-  let scriptBytesSlotSize = 0
   let signatureScriptSlotSize = 0
   let witnessDataSlotSize = 0
-  const sequenceSlotSize = 4
 
   switch (input.addressType) {
     case "custom": {
@@ -209,7 +205,6 @@ export const estimateInputVSizeAfterSign = (
         sizes.publicKeyLength,
       )
 
-      scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
       break
     }
     case "p2sh": {
@@ -234,8 +229,6 @@ export const estimateInputVSizeAfterSign = (
         input.redeemScript.length,
       )
 
-      scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
-
       if (input.witnessDataByteLengths != null) {
         witnessDataSlotSize = sum(
           // byte to indicate the witness stack item count
@@ -257,7 +250,6 @@ export const estimateInputVSizeAfterSign = (
        * scriptSig for p2wpkh will always be empty
        */
       signatureScriptSlotSize = 0
-      scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
       const witnessSigSizes = estimatePublicKeyScriptVSize(true)
       witnessDataSlotSize = sum(
@@ -281,7 +273,6 @@ export const estimateInputVSizeAfterSign = (
        * scriptSig for p2wsh will always be empty
        */
       signatureScriptSlotSize = 0
-      scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
       /**
        * p2wsh witness stack usually like:
@@ -321,7 +312,6 @@ export const estimateInputVSizeAfterSign = (
        * scriptSig for p2tr will always be empty
        */
       signatureScriptSlotSize = 0
-      scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
       witnessDataSlotSize = sum(
         // byte to indicate the witness stack item count
@@ -337,7 +327,6 @@ export const estimateInputVSizeAfterSign = (
        * scriptSig for p2tr will always be empty
        */
       signatureScriptSlotSize = 0
-      scriptBytesSlotSize = getCompactSizeByteSize(signatureScriptSlotSize)
 
       /**
        * tap leaf script usually like:
@@ -390,15 +379,23 @@ export const estimateInputVSizeAfterSign = (
   }
 
   return {
-    inputSize: sum(
-      previousOutputTxidSlotSize,
-      previousOutputIndexSlotSize,
-      scriptBytesSlotSize,
-      signatureScriptSlotSize,
-      sequenceSlotSize,
-    ),
+    inputSize: sumInputVSize(signatureScriptSlotSize),
     witnessDataSize: witnessDataSlotSize,
   }
+}
+
+export const sumInputVSize = (signatureScriptSlotSize: number): number => {
+  const previousOutputTxidSlotSize = 32
+  const previousOutputIndexSlotSize = 4
+  const sequenceSlotSize = 4
+
+  return sum(
+    previousOutputTxidSlotSize,
+    previousOutputIndexSlotSize,
+    getCompactSizeByteSize(signatureScriptSlotSize), // byte to indicate the length of the signature
+    signatureScriptSlotSize,
+    sequenceSlotSize,
+  )
 }
 
 /**
