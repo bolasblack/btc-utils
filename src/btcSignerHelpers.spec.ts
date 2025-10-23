@@ -43,11 +43,14 @@ describe("estimateInputVSizeAfterSign_2", () => {
       addressType: "p2wpkh",
     })
 
-    expect(estimated.inputSize + (estimated.witnessDataSize ?? 0)).toBe(
-      expected.inputSize +
-        expected.witnessDataSize / WITNESS_SCALE_FACTOR -
-        0.25 /* signature length difference */,
-    )
+    expect({
+      inputSize: expected.inputSize,
+      witnessDataSize:
+        expected.witnessDataSize - 1 /* signature length difference */,
+    }).toEqual({
+      inputSize: estimated.inputSize,
+      witnessDataSize: estimated.witnessDataSize,
+    })
   })
 
   it("works with estimateTransactionVSizeAfterSign", () => {

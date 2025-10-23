@@ -38,7 +38,13 @@ export const estimateInputVSizeAfterSign = (
         getCompactSizeByteSize(input.finalScriptWitness.length),
 
         // witness stack items
-        ...input.finalScriptWitness.map(a => a.length),
+        ...input.finalScriptWitness.flatMap(a => [
+          // item length byte
+          getCompactSizeByteSize(a.length),
+
+          // item
+          a.length,
+        ]),
       )
     }
 
